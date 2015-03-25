@@ -1,4 +1,13 @@
-define(['jquery', 'knockout', './router', 'bootstrap', 'knockout-projections'], function($, ko, router) {
+define(['jquery', 'knockout', './router', 'bootstrap', 'knockout-projections',
+        //'image!awsum.jpg',
+        //'json!data/foo.json',
+        //'noext!js/bar.php',
+        //'mdown!data/lorem_ipsum.md',
+        'async!http://maps.google.com/maps/api/js?sensor=false',
+        'goog!visualization,1,packages:[corechart,geochart]',
+        'goog!search,1',
+        //'font!google,families:[Tangerine,Cantarell]',
+       ], function($, ko, router) {
 
   // Components can be packaged as AMD modules, such as the following:
   ko.components.register('nav-bar', { require: 'components/nav-bar/nav-bar' });
