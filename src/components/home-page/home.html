@@ -1,7 +1,7 @@
 <h2>Home</h2>
 
-<p data-bind='text: message'></p>
-
-<button data-bind='click: doSomething'>Click me</button>
-
-<div id="mapDiv" data-bind="style:{width:'300px',height:'300px'},map:myMap"></div>
+<div id="content">
+  <div id="map" class="map" data-bind="map:myNeighborhood"></div>
+  <input id="search-input" class="controls" type="text" data-bind="addressAutocomplete:places" autocomplete="on" style="z-index: 0; position: absolute; left: 30px; top: 70px;">
+  <div class="container overlap"></div>
+</div>
