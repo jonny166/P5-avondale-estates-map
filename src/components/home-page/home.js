@@ -13,22 +13,32 @@ define(["knockout", "text!./home.html",
             this.lon = lon;
         };
 
+        var restaurants = ["Pallookaville Fine Foods", "The Bishop", "Skip's Chicago Dogs"];
+
+        var shopping = ["Garage Door Studio", "Pine Street Market", "Mama bath and body"];
+
         function HomeViewModel(route) {
             var self = this;
 
+            self.myNeighborhood = ko.observable(new Neighborhood("Avondale Estates, GA", 33.776, -84.2650));
             self.places = ko.observableArray([]);
+            self.restaurants = ko.observableArray();
+            self.shopping = ko.observableArray();
             self.markers = ko.observableArray();
-            self.myNeighborhood = ko.observable(new Neighborhood("Avondale Estates, GA", 33.7708, -84.2650));
             console.log("my lat " + self.myNeighborhood().lat + " my lon " + self.myNeighborhood().lon);
             this.message = ko.observable('Welcome to avondale-map!');
             this.searchText = ko.observable('Search Box');
         }
 
-        HomeViewModel.prototype.setMarkers = function(places){
-            if (places.length == 0) {
+
+        HomeViewModel.prototype.setMarkers = function(){
+            console.log("setMarkers");
+
+            if (this.places().length == 0) {
+                console.log("no places to mark");
                 return;
             }
-            console.log("Make markers for  " + places.length + " places");
+            console.log("Make markers for  " + this.places().length + " places");
             console.log(this.myNeighborhood());
             if (this.markers().length > 0){
                 for (var i = 0, marker; marker = this.markers()[i]; i++) {
@@ -39,7 +49,7 @@ define(["knockout", "text!./home.html",
             // For each place, get the icon, place name, and location.
             this.markers([]);
             var bounds = new google.maps.LatLngBounds();
-            for (var i = 0, place; place = places[i]; i++) {
+            for (var i = 0, place; place = this.places()[i]; i++) {
                 var image = {
                     url: place.icon,
                     size: new google.maps.Size(71, 71),
@@ -88,8 +98,8 @@ define(["knockout", "text!./home.html",
                     var newPlace = autocomplete.getPlace();
                     console.log("got a new place");
                     console.log(newPlace);
-                    bindingContext.$data.setMarkers([newPlace]);
-		    value([newPlace]);
+		    value().push(newPlace);
+                    bindingContext.$data.setMarkers();
 		});
                 
 		// Bias the SearchBox results towards places that are within the bounds of the
@@ -100,7 +110,7 @@ define(["knockout", "text!./home.html",
 		});      
                 
 	    },
-	    update: function (element, valueAccessor, allBindingsAccessor) {
+	    update: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
 		console.log("search box changed");
 		ko.bindingHandlers.value.update(element, valueAccessor);
 	    }
@@ -110,7 +120,7 @@ define(["knockout", "text!./home.html",
         
 	ko.bindingHandlers.map = {
 	    //http://stackoverflow.com/questions/12722925/google-maps-and-knockoutjs
-	    init: function(element, valueAccessor, allBindingsAccessor, viewModel) {
+	    init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
 		var mapObj = ko.utils.unwrapObservable(valueAccessor());
 		var latLng = new google.maps.LatLng(
 		    ko.utils.unwrapObservable(mapObj.lat),
@@ -121,7 +131,26 @@ define(["knockout", "text!./home.html",
 		    mapTypeId: google.maps.MapTypeId.ROADMAP
 		};
                 
-		mapObj.googleMap = new google.maps.Map(element, mapOptions);
+		mapObj.googleMap = new google.maps.Map(element, mapOptions);                
+
+                var request = {
+                    location: latLng,
+                    radius: '10',
+                    query: 'restaurants'
+                };
+
+                var service = new google.maps.places.PlacesService(mapObj.googleMap);
+                service.textSearch(request, function(results, status) {
+                if (status == google.maps.places.PlacesServiceStatus.OK) {
+                    for (var i = 0; i < results.length; i++) {
+                        var place = results[i];
+                        bindingContext.$data.places().push(place);
+                    }
+                    //populate the known place markers
+                    bindingContext.$data.setMarkers();
+                }
+            });
+
 		//var searchBoxElement = document.getElementById("search-input");
 		//mapObj.googleMap.controls[google.maps.ControlPosition.TOP_LEFT].push(searchBoxElement);
 		//mapObj.searchBox = new google.maps.places.SearchBox(searchBoxElement);
@@ -129,7 +158,7 @@ define(["knockout", "text!./home.html",
 	    }
 	};            
         
-
+        
         return {
             viewModel: HomeViewModel,
             template: homeTemplate
