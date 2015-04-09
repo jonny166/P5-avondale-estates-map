@@ -11,7 +11,8 @@ html,body {
 }
 
 #map {
-    background:red;display: block;
+    background:red;
+    display: block;
     position:absolute;
     height:auto;
     bottom:0;
@@ -23,6 +24,22 @@ html,body {
 
 .overlap {
     position:relative;
+}
+
+.panel {
+    position:absolute;
+    bottom: 1em;
+    right: 5em;
+    width: 300px;
+    z-index: 20000;
+    background-color: white;
+    padding: 0 0.5em 0.5em 0.5em;
+}
+
+h1 {
+  font-size: 130%;
+  margin-bottom: 0.5em;
+  border-bottom: 1px solid #fcb100;
 }
 
 

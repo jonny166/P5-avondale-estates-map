@@ -3,5 +3,16 @@
 <div id="content">
   <div id="map" class="map" data-bind="map:myNeighborhood"></div>
   <input id="search-input" class="controls" type="text" data-bind="addressAutocomplete:places" autocomplete="on" style="z-index: 0; position: absolute; left: 30px; top: 70px;">
-  <div class="container overlap"></div>
+  <form>
+    <input type="checkbox" name="restaurants" value="Show Restaurants" class="overlap" data-bind="checked:showRestaurants" checked>
+    <span class="overlap"> Show Restaurants</span>
+  </form> 
+  <div class="panel">
+    <h1> Great Places In Avondale Estates </h1>
+    <ul data-bind="foreach: restaurants">
+      <li>
+        <span data-bind="text: $data.name"></span>
+      </li>
+    </ul>
+  </div>
 </div>

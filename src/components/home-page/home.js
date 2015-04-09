@@ -13,16 +13,16 @@ define(["knockout", "text!./home.html",
             this.lon = lon;
         };
 
-        var restaurants = ["Pallookaville Fine Foods", "The Bishop", "Skip's Chicago Dogs"];
-
-        var shopping = ["Garage Door Studio", "Pine Street Market", "Mama bath and body"];
-
         function HomeViewModel(route) {
             var self = this;
 
             self.myNeighborhood = ko.observable(new Neighborhood("Avondale Estates, GA", 33.776, -84.2650));
             self.places = ko.observableArray([]);
-            self.restaurants = ko.observableArray();
+            self.restaurants = ko.observableArray([]);
+            self.showRestaurants = ko.observable(true);
+            self.showRestaurants.subscribe(function(updated){
+                self.setMarkers();
+            });
             self.shopping = ko.observableArray();
             self.markers = ko.observableArray();
             console.log("my lat " + self.myNeighborhood().lat + " my lon " + self.myNeighborhood().lon);
@@ -33,23 +33,26 @@ define(["knockout", "text!./home.html",
 
         HomeViewModel.prototype.setMarkers = function(){
             console.log("setMarkers");
-
-            if (this.places().length == 0) {
-                console.log("no places to mark");
-                return;
+            console.log("user has added " + this.places().length + "  places");
+            var allPlaces = this.places();
+            if (this.showRestaurants() === true){
+                console.log("display the restaurants");
+                allPlaces = allPlaces.concat(this.restaurants());
             }
-            console.log("Make markers for  " + this.places().length + " places");
-            console.log(this.myNeighborhood());
+
+            console.log("Make markers for  " + allPlaces.length + " places");
             if (this.markers().length > 0){
-                for (var i = 0, marker; marker = this.markers()[i]; i++) {
-                    marker.setMap(null);
+                console.log("removing all the markers");
+                for (var i = 0; i < this.markers().length; i++) {
+                    console.log("removing marker " + i);
+                    this.markers.replace(i, this.markers()[i].setMap(null))
                 }
             }
             
             // For each place, get the icon, place name, and location.
             this.markers([]);
             var bounds = new google.maps.LatLngBounds();
-            for (var i = 0, place; place = this.places()[i]; i++) {
+            for (var i = 0, place; place = allPlaces[i]; i++) {
                 var image = {
                     url: place.icon,
                     size: new google.maps.Size(71, 71),
@@ -66,9 +69,8 @@ define(["knockout", "text!./home.html",
                     position: place.geometry.location
                 });
                 console.log("created map marker");
-                console.log(marker)
                 
-                this.markers().push(marker);
+                this.markers.push(marker);
                 
                 bounds.extend(place.geometry.location);
             }
@@ -97,8 +99,7 @@ define(["knockout", "text!./home.html",
 		google.maps.event.addListener(autocomplete, 'place_changed', function () {
                     var newPlace = autocomplete.getPlace();
                     console.log("got a new place");
-                    console.log(newPlace);
-		    value().push(newPlace);
+		    value.push(newPlace);
                     bindingContext.$data.setMarkers();
 		});
                 
@@ -135,7 +136,7 @@ define(["knockout", "text!./home.html",
 
                 var request = {
                     location: latLng,
-                    radius: '10',
+                    radius: '2',
                     query: 'restaurants'
                 };
 
@@ -144,7 +145,7 @@ define(["knockout", "text!./home.html",
                 if (status == google.maps.places.PlacesServiceStatus.OK) {
                     for (var i = 0; i < results.length; i++) {
                         var place = results[i];
-                        bindingContext.$data.places().push(place);
+                        bindingContext.$data.restaurants.push(place);
                     }
                     //populate the known place markers
                     bindingContext.$data.setMarkers();
