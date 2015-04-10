@@ -26,14 +26,11 @@ html,body {
     position:relative;
 }
 
-.panel {
-    position:absolute;
+.place-list {
+    position: absolute;
     bottom: 1em;
     right: 5em;
-    width: 300px;
-    z-index: 20000;
-    background-color: white;
-    padding: 0 0.5em 0.5em 0.5em;
+    width: 400px;
 }
 
 h1 {

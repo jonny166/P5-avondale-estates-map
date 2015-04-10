@@ -1,4 +1,4 @@
-define(["knockout", "text!./home.html",
+define(["knockout", "text!./home.html", "bootstrap",
         //'async!http://maps.google.com/maps/api/js?sensor=false',
         'async!https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places',
         'goog!search,1',
@@ -136,7 +136,7 @@ define(["knockout", "text!./home.html",
 
                 var request = {
                     location: latLng,
-                    radius: '2',
+                    radius: '1',
                     query: 'restaurants'
                 };
 

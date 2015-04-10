@@ -6,3 +6,4 @@ https://developers.google.com/maps/documentation/javascript/examples/places-sear
 http://stackoverflow.com/questions/14113586/bootstrap-fullscreen-google-maps-with-navbar
 http://stackoverflow.com/questions/12162062/difference-between-the-bound-knockout-value-and-the-value-of-the-input-element
 http://stackoverflow.com/questions/12722925/google-maps-and-knockoutjs	
+http://www.tutorialspark.com/twitterBootstrap/TwitterBootstrap_Collapsible_Accordion_Demo.php
