@@ -5,6 +5,7 @@ define(["knockout", "text!./home.html", "bootstrap",
         //'goog!visualization,1,packages:[corechart,geochart]',
         //'goog!search,1',
     ],
+
     function(ko, homeTemplate) {
 
         var Neighborhood = function(name, lat, lon) {

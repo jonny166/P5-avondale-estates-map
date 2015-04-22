@@ -9,22 +9,35 @@
   </form> 
 </div>
 
-<div class="overlap place-list">
-  <div class="panel-group" id="accordion" data-bind="foreach: restaurants">
-      <div class="panel panel-primary">
-        <div class="panel-heading">
-          <h4 class="panel-title">
-            <a data-toggle="collapse" data-parent="#accordion"
-                data-bind="attr: {href: '#place_' + $index() }">
-              <span data-bind="text: $data.name">Collapsible Accordion 1</span>
-            </a>
-          </h4>
-        </div>
-        <div class="panel-collapse collapse"  data-bind="attr: {id: 'place_' + $index() }">
-          <div class="panel-body">
-            <span data-bind="text: $data.name"></span>
+<div class="container overlap">
+  <div class="row">
+    <div class="span6">
+    </div>
+    <div class="span6 pull-right">
+
+      <div class="panel-group" id="accordion" data-bind="foreach: restaurants">
+        <div class="panel panel-primary">
+          <div class="panel-heading">
+            <h4 class="panel-title">
+              <a data-toggle="collapse" data-parent="#accordion"
+                 data-bind="attr: {href: '#place_' + $index() }">
+                <span data-bind="text: $data.name">Collapsible Accordion 1</span>
+              </a>
+            </h4>
+          </div>
+          <div class="panel-collapse collapse"  data-bind="attr: {id: 'place_' + $index() }">
+            <div class="panel-body">
+              <span data-bind="text: $data.name"></span>
+            </div>
           </div>
         </div>
       </div>
+      
+    </div>
   </div>
+</div> 
+
+
+
+<div class="container overlap place-list">
 </div>
