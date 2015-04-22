@@ -2,20 +2,45 @@
 
 <div id="content">
   <div id="map" class="map" data-bind="map:myNeighborhood"></div>
-  <input id="search-input" class="controls" type="text" data-bind="addressAutocomplete:places" autocomplete="on" style="z-index: 0; position: absolute; left: 30px; top: 70px;">
-  <form>
-    <input type="checkbox" name="restaurants" value="Show Restaurants" class="overlap" data-bind="checked:showRestaurants" checked>
-    <span class="overlap"> Show Restaurants</span>
-  </form> 
 </div>
 
-<div class="container overlap">
+<div class="container">
+  <div id="map" class="map" data-bind="map:myNeighborhood"></div>
   <div class="row">
-    <div class="span6">
-    </div>
-    <div class="span6 pull-right">
+    <div class="span12 pull-left">
+      <form>
+        <div class="form-group map-control-form overlap">
+          <input id="search-input" class="controls form-control" type="text" data-bind="addressAutocomplete:places" autocomplete="on" >
 
-      <div class="panel-group" id="accordion" data-bind="foreach: restaurants">
+          <div class="checkbox">
+            <label><input type="checkbox" value="" data-bind="checked:showRestaurants" checked>Show Restaurants</label>
+          </div>
+        </div>
+      </form> 
+    </div>
+  </div>
+  <div class="row">
+    <div class="span12 pull-left place-list overlap">
+
+      <div class="panel-group" id="placeAccordion" data-bind="foreach: places">
+        <div class="panel panel-primary">
+          <div class="panel-heading">
+            <h4 class="panel-title">
+              <a data-toggle="collapse" data-parent="#placeAccordion"
+                 data-bind="attr: {href: '#place_' + $index() }">
+                <span data-bind="text: $data.name">Collapsible Accordion 1</span>
+              </a>
+            </h4>
+          </div>
+          <div class="panel-collapse collapse"  data-bind="attr: {id: 'place_' + $index() }">
+            <div class="panel-body">
+              <span data-bind="text: $data.name"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+   
+      <div class="panel-group" id="accordion" data-bind="foreach: restaurants, visible:showRestaurants">
         <div class="panel panel-primary">
           <div class="panel-heading">
             <h4 class="panel-title">
@@ -37,7 +62,3 @@
   </div>
 </div> 
 
-
-
-<div class="container overlap place-list">
-</div>

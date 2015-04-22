@@ -17,7 +17,7 @@ define(["knockout", "text!./home.html", "bootstrap",
         function HomeViewModel(route) {
             var self = this;
 
-            self.myNeighborhood = ko.observable(new Neighborhood("Avondale Estates, GA", 33.776, -84.2650));
+            self.myNeighborhood = ko.observable(new Neighborhood("Avondale Estates, GA", 33.776, -84.2750));
             self.places = ko.observableArray([]);
             self.restaurants = ko.observableArray([]);
             self.showRestaurants = ko.observable(true);
@@ -69,6 +69,7 @@ define(["knockout", "text!./home.html", "bootstrap",
                     title: place.name,
                     position: place.geometry.location
                 });
+
                 console.log("created map marker");
                 
                 this.markers.push(marker);
@@ -95,7 +96,8 @@ define(["knockout", "text!./home.html", "bootstrap",
 		ko.utils.extend(options, allBindings().autocompleteOptions)
 		
 		var autocomplete = new google.maps.places.Autocomplete(element, options);
-		bindingContext.$data.myNeighborhood().googleMap.controls[google.maps.ControlPosition.TOP_LEFT].push(element);
+		//bindingContext.$data.myNeighborhood().googleMap.controls[google.maps.ControlPosition.TOP_RIGHT].push(element);
+		bindingContext.$data.myNeighborhood().googleMap.controls.push(element);
                 
 		google.maps.event.addListener(autocomplete, 'place_changed', function () {
                     var newPlace = autocomplete.getPlace();
