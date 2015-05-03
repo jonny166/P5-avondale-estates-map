@@ -28,11 +28,12 @@ define(["knockout", "text!./home.html", "bootstrap",
             self.markers = ko.observableArray();
             console.log("my lat " + self.myNeighborhood().lat + " my lon " + self.myNeighborhood().lon);
             this.message = ko.observable('Welcome to avondale-map!');
-            this.searchText = ko.observable('Search Box');
         }
 
 
         HomeViewModel.prototype.setMarkers = function(){
+            var self = this;
+
             console.log("setMarkers");
             console.log("user has added " + this.places().length + "  places");
             var allPlaces = this.places();
@@ -54,50 +55,102 @@ define(["knockout", "text!./home.html", "bootstrap",
             this.markers([]);
             var bounds = new google.maps.LatLngBounds();
             for (var i = 0, place; place = allPlaces[i]; i++) {
-                var image = {
-                    url: place.icon,
-                    size: new google.maps.Size(71, 71),
-                    origin: new google.maps.Point(0, 0),
-                    anchor: new google.maps.Point(17, 34),
-                    scaledSize: new google.maps.Size(25, 25)
-                };
-                
-                // Create a marker for each place.
-                var marker = new google.maps.Marker({
-                    map: this.myNeighborhood().googleMap,
-                    icon: image,
-                    title: place.name,
-                    position: place.geometry.location
-                });
+                (function(place) {
+                    var image = {
+                        url: place.icon,
+                        size: new google.maps.Size(71, 71),
+                        origin: new google.maps.Point(0, 0),
+                        anchor: new google.maps.Point(17, 34),
+                        scaledSize: new google.maps.Size(25, 25)
+                    };
+                    
+                    // Create a marker for each place.
+                    var marker = new google.maps.Marker({
+                        map: self.myNeighborhood().googleMap,
+                        icon: image,
+                        title: place.name,
+                        position: place.geometry.location
+                    });
+                    google.maps.event.addListener(marker, 'click', function(e) {
+                        console.log("clicked " + marker.title);
+                        console.log(e);
+                    });
 
-                console.log("created map marker");
                 
-                this.markers.push(marker);
+                    console.log("created map marker for " + marker.title);
+                    
+                    self.markers.push(marker);
                 
-                bounds.extend(place.geometry.location);
+                    bounds.extend(place.geometry.location);
+                })(place);
             }
             
             //this.myNeighborhood().googleMap.fitBounds(bounds);
         };
         
+	
+        
+        
+	ko.bindingHandlers.map = {
+	    //http://stackoverflow.com/questions/12722925/google-maps-and-knockoutjs
+	    init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+		var mapObj = ko.utils.unwrapObservable(valueAccessor());
+		var latLng = new google.maps.LatLng(
+		    ko.utils.unwrapObservable(mapObj.lat),
+		    ko.utils.unwrapObservable(mapObj.lon));
+		var mapOptions = {
+		    center: latLng,
+		    zoom: 15,
+		    mapTypeId: google.maps.MapTypeId.ROADMAP
+		};
+                
+		mapObj.googleMap = new google.maps.Map(element, mapOptions);          
 
-        HomeViewModel.prototype.doSomething = function() {
-            this.message('You invoked doSomething() on the viewmodel.');
-        };
+                //Set our place search and place list as 
+                //google controls and attach them to the map
+                var controlElement = $("#map-place-control")
+                mapObj.googleMap.controls[google.maps.ControlPosition.LEFT_TOP].push(controlElement[0]);      
+
+                var request = {
+                    location: latLng,
+                    radius: '1',
+                    query: 'restaurants'
+                };
+                
+                console.log("Let's look up some restaurants");
+
+                var service = new google.maps.places.PlacesService(mapObj.googleMap);
+                service.textSearch(request, function(results, status) {
+                    if (status == google.maps.places.PlacesServiceStatus.OK) {
+                        console.log("places loaded with this many results: " + results.length);
+                        for (var i = 0; i < results.length; i++) {
+                            var place = results[i];
+                            bindingContext.$data.restaurants.push(place);
+                        }
+                        //populate the known place markers
+                        bindingContext.$data.setMarkers();
+                    }
+                    else {
+                        console.log("Got bad places service status!");
+                        console.log(status);
+                    }
+                });
+                                
+	    }
+	};            
+        
 
 
 	ko.bindingHandlers.addressAutocomplete = {
-	    init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+	    init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
                 console.log("ko.bindingHandlers.addressAutocomplete");
 		var value = valueAccessor();
                 var valueUnwrapped = ko.unwrap(value);
 		
 		var options = { types: ['geocode', 'establishment'] };
-		ko.utils.extend(options, allBindings().autocompleteOptions)
+		ko.utils.extend(options, allBindingsAccessor().autocompleteOptions)
 		
 		var autocomplete = new google.maps.places.Autocomplete(element, options);
-		//bindingContext.$data.myNeighborhood().googleMap.controls[google.maps.ControlPosition.TOP_RIGHT].push(element);
-		bindingContext.$data.myNeighborhood().googleMap.controls.push(element);
                 
 		google.maps.event.addListener(autocomplete, 'place_changed', function () {
                     var newPlace = autocomplete.getPlace();
@@ -119,49 +172,7 @@ define(["knockout", "text!./home.html", "bootstrap",
 		ko.bindingHandlers.value.update(element, valueAccessor);
 	    }
 	};
-	
-        
-        
-	ko.bindingHandlers.map = {
-	    //http://stackoverflow.com/questions/12722925/google-maps-and-knockoutjs
-	    init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-		var mapObj = ko.utils.unwrapObservable(valueAccessor());
-		var latLng = new google.maps.LatLng(
-		    ko.utils.unwrapObservable(mapObj.lat),
-		    ko.utils.unwrapObservable(mapObj.lon));
-		var mapOptions = {
-		    center: latLng,
-		    zoom: 15,
-		    mapTypeId: google.maps.MapTypeId.ROADMAP
-		};
-                
-		mapObj.googleMap = new google.maps.Map(element, mapOptions);                
 
-                var request = {
-                    location: latLng,
-                    radius: '1',
-                    query: 'restaurants'
-                };
-
-                var service = new google.maps.places.PlacesService(mapObj.googleMap);
-                service.textSearch(request, function(results, status) {
-                if (status == google.maps.places.PlacesServiceStatus.OK) {
-                    for (var i = 0; i < results.length; i++) {
-                        var place = results[i];
-                        bindingContext.$data.restaurants.push(place);
-                    }
-                    //populate the known place markers
-                    bindingContext.$data.setMarkers();
-                }
-            });
-
-		//var searchBoxElement = document.getElementById("search-input");
-		//mapObj.googleMap.controls[google.maps.ControlPosition.TOP_LEFT].push(searchBoxElement);
-		//mapObj.searchBox = new google.maps.places.SearchBox(searchBoxElement);
-                
-	    }
-	};            
-        
         
         return {
             viewModel: HomeViewModel,

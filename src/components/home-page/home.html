@@ -4,14 +4,15 @@
   <div id="map" class="map" data-bind="map:myNeighborhood"></div>
 </div>
 
-<div class="container">
-  <div id="map" class="map" data-bind="map:myNeighborhood"></div>
+<div id="map" class="map" data-bind="map:myNeighborhood"></div>
+
+<div id="map-place-control">
   <div class="row">
     <div class="span12 pull-left">
       <form>
         <div class="form-group map-control-form overlap">
-          <input id="search-input" class="controls form-control" type="text" data-bind="addressAutocomplete:places" autocomplete="on" >
-
+          <input id="search-input" class="controls form-control" type="text" data-bind="addressAutocomplete:places" autocomplete="on">
+          <!--input id="search-input" class="controls form-control" type="text"  autocomplete="on" -->
           <div class="checkbox">
             <label><input type="checkbox" value="" data-bind="checked:showRestaurants" checked>Show Restaurants</label>
           </div>
