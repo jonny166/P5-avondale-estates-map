@@ -38,6 +38,7 @@ html,body {
     border-width: 5px;
     border-color:orange;
     margin-left: 40px;
+    position: relative;
 }
 
 .map-control-form{

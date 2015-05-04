@@ -71,9 +71,28 @@ define(["knockout", "text!./home.html", "bootstrap",
                         title: place.name,
                         position: place.geometry.location
                     });
+                    
+                    marker.placeListIndex = i;
+
                     google.maps.event.addListener(marker, 'click', function(e) {
                         console.log("clicked " + marker.title);
-                        console.log(e);
+                        
+                        //close all open panels so we can scroll to the right spot
+                        $("#accordion .in").collapse('hide');
+                        $("#placeAccordion .in").collapse('hide');
+                        
+                        //scroll the list down to the one we will click on
+                        var placeCount = allPlaces.length;
+                        var totalHeight = $(".place-list").get(0).scrollHeight;
+                        var newPosition = (totalHeight/placeCount) * marker.placeListIndex - $("#place_" + place.place_id).outerHeight();
+                        console.log("count: " + placeCount + "  height: " + totalHeight + "  position: " + newPosition);
+                        $(".place-list").scrollTop(newPosition);
+
+
+                        //fire a click event on the right panel
+                        $("a[href=#place_" + place.place_id + "]").click()
+
+                        
                     });
 
                 
@@ -94,6 +113,7 @@ define(["knockout", "text!./home.html", "bootstrap",
 	ko.bindingHandlers.map = {
 	    //http://stackoverflow.com/questions/12722925/google-maps-and-knockoutjs
 	    init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+                console.log("ko.bindingHandlers.init");
 		var mapObj = ko.utils.unwrapObservable(valueAccessor());
 		var latLng = new google.maps.LatLng(
 		    ko.utils.unwrapObservable(mapObj.lat),

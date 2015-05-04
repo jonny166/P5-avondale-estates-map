@@ -1,9 +1,5 @@
 <h2>Home</h2>
 
-<div id="content">
-  <div id="map" class="map" data-bind="map:myNeighborhood"></div>
-</div>
-
 <div id="map" class="map" data-bind="map:myNeighborhood"></div>
 
 <div id="map-place-control">
@@ -24,36 +20,43 @@
     <div class="span12 pull-left place-list overlap">
 
       <div class="panel-group" id="placeAccordion" data-bind="foreach: places">
-        <div class="panel panel-primary">
+        <div class="panel panel-info">
           <div class="panel-heading">
             <h4 class="panel-title">
               <a data-toggle="collapse" data-parent="#placeAccordion"
-                 data-bind="attr: {href: '#place_' + $index() }">
+                 data-bind="attr: {href: '#place_' + $data.place_id }">
                 <span data-bind="text: $data.name">Collapsible Accordion 1</span>
               </a>
             </h4>
           </div>
-          <div class="panel-collapse collapse"  data-bind="attr: {id: 'place_' + $index() }">
-            <div class="panel-body">
-              <span data-bind="text: $data.name"></span>
+          <div class="panel-collapse collapse"  data-bind="attr: {id: 'place_' + $data.place_id }">
+            <div class="accordion-body">
+              <!--span data-bind="text: $data.name"></span-->
+              <h5>Rating:</h5> <span data-bind="text: $data.rating"></span> /5 <br>
+              <h5>Website:</h5> <a data-bind="attr: {href: $data.website,title:$data.website }"></a> <br>
+              <h5>Address:</h5> <span data-bind="text: $data.formatted_address"></span>
+
             </div>
           </div>
         </div>
       </div>
    
       <div class="panel-group" id="accordion" data-bind="foreach: restaurants, visible:showRestaurants">
-        <div class="panel panel-primary">
+        <div class="panel panel-success">
           <div class="panel-heading">
             <h4 class="panel-title">
               <a data-toggle="collapse" data-parent="#accordion"
-                 data-bind="attr: {href: '#place_' + $index() }">
+                 data-bind="attr: {href: '#place_' + $data.place_id }">
                 <span data-bind="text: $data.name">Collapsible Accordion 1</span>
               </a>
             </h4>
           </div>
-          <div class="panel-collapse collapse"  data-bind="attr: {id: 'place_' + $index() }">
-            <div class="panel-body">
-              <span data-bind="text: $data.name"></span>
+          <div class="panel-collapse collapse"  data-bind="attr: {id: 'place_' + $data.place_id }">
+            <div class="accordion-body">
+              <!--span data-bind="text: $data.name"></span-->
+              <h5>Rating:</h5> <span data-bind="text: $data.rating"></span> /5 <br>
+              <h5>Website:</h5> <a data-bind="attr: {href: $data.website,title:$data.website }"></a> <br>
+              <h5>Address:</h5> <span data-bind="text: $data.formatted_address"></span>
             </div>
           </div>
         </div>
