@@ -7,3 +7,6 @@ http://stackoverflow.com/questions/14113586/bootstrap-fullscreen-google-maps-wit
 http://stackoverflow.com/questions/12162062/difference-between-the-bound-knockout-value-and-the-value-of-the-input-element
 http://stackoverflow.com/questions/12722925/google-maps-and-knockoutjs	
 http://www.tutorialspark.com/twitterBootstrap/TwitterBootstrap_Collapsible_Accordion_Demo.php
+https://www.flickr.com/services/api/flickr.photos.search.html
+http://mashupguide.net/1.0/html/ch08s07.xhtml
+http://stackoverflow.com/questions/15317796/knockout-loses-bindings-when-google-maps-api-v3-info-window-is-closed

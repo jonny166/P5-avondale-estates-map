@@ -1,6 +1,7 @@
 // require.js looks for the following global when initializing
 var require = {
     baseUrl: ".",
+    catchError: true,
     paths: {
         "bootstrap":            "bower_modules/components-bootstrap/js/bootstrap.min",
         "crossroads":           "bower_modules/crossroads/dist/crossroads.min",
@@ -24,5 +25,8 @@ var require = {
     },
     shim: {
         "bootstrap": { deps: ["jquery"] }
+    },
+    onError: function(err){
+        alert("got an error");
     }
 };

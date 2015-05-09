@@ -35,4 +35,12 @@ define(["knockout", "crossroads", "hasher"], function(ko, crossroads, hasher) {
         hasher.changed.add(parseHash);
         hasher.init();
     }
-});
+}, 
+       
+       function(err){
+           //The errback, error callback
+           //The error has a list of modules that failed
+           var failedId = err.requireModules && err.requireModules[0];
+           
+           console.log("Got failedId: " + failedId);
+           });

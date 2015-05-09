@@ -24,6 +24,8 @@ html,body {
     margin-top:50px; /* adjust top margin to your header height */
 }
 
+#map img{max-width:none}
+
 .overlap {
     position:relative;
 }

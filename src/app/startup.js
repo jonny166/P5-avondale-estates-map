@@ -3,9 +3,9 @@ define(['jquery', 'knockout', './router', 'bootstrap', 'knockout-projections',
         //'json!data/foo.json',
         //'noext!js/bar.php',
         //'mdown!data/lorem_ipsum.md',
-        'async!https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places',
-        'goog!visualization,1,packages:[corechart,geochart]',
-        'goog!search,1',
+        //'async!https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places',
+        //'goog!visualization,1,packages:[corechart,geochart]',
+        //'goog!search,1',
         //'font!google,families:[Tangerine,Cantarell]',
        ], function($, ko, router) {
 
@@ -23,3 +23,4 @@ define(['jquery', 'knockout', './router', 'bootstrap', 'knockout-projections',
   // Start the application
   ko.applyBindings({ route: router.currentRoute });
 });
+       
