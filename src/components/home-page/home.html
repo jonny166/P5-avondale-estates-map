@@ -5,10 +5,9 @@
 <div id="map-place-control">
   <div class="row">
     <div class="span12 pull-left">
-      <form>
+      <form onkeypress="return event.keyCode != 13">
         <div class="form-group map-control-form overlap">
           <input id="search-input" class="controls form-control" type="text" data-bind="addressAutocomplete:places" autocomplete="on">
-          <!--input id="search-input" class="controls form-control" type="text"  autocomplete="on" -->
           <div class="checkbox">
             <label><input type="checkbox" value="" data-bind="checked:showRestaurants" checked>Show Restaurants</label>
           </div>
@@ -18,35 +17,34 @@
   </div>
   <div class="row">
     <div class="span12 pull-left place-list overlap">
-
-      <div class="panel-group" id="placeAccordion" data-bind="foreach: places">
-        <div class="panel panel-info">
-          <div class="panel-heading">
-            <h4 class="panel-title">
-              <a data-toggle="collapse" data-parent="#placeAccordion"
-                 data-bind="attr: {href: '#place_' + $data.place_id }">
-                <span data-bind="text: $data.name">Collapsible Accordion 1</span>
-              </a>
-            </h4>
-          </div>
-          <div class="panel-collapse collapse"  data-bind="attr: {id: 'place_' + $data.place_id }">
-            <div class="accordion-body">
-              <!--span data-bind="text: $data.name"></span-->
-              <h5>Rating:</h5> <span data-bind="text: $data.rating"></span> /5 <br>
-              <h5>Website:</h5> <a data-bind="attr: {href: $data.website,title:$data.website }"></a> <br>
-              <h5>Address:</h5> <span data-bind="text: $data.formatted_address"></span>
-
-            </div>
-          </div>
-        </div>
-      </div>
    
       <div class="panel-group" id="accordion" data-bind="foreach: restaurants, visible:showRestaurants">
         <div class="panel panel-success">
           <div class="panel-heading">
             <h4 class="panel-title">
               <a data-toggle="collapse" data-parent="#accordion"
-                 data-bind="attr: {href: '#place_' + $data.place_id }">
+                 data-bind="attr: {href: '#place_' + $data.place_id }, click: $parent.clickMapMarker">
+                <span data-bind="text: $data.name">Collapsible Accordion 2</span>
+              </a>
+            </h4>
+          </div>
+          <div class="panel-collapse collapse"  data-bind="attr: {id: 'place_' + $data.place_id }">
+            <div class="accordion-body">
+              <!--span data-bind="text: $data.name"></span-->
+              <h5>Rating:</h5> <span data-bind="text: $data.rating"></span> /5 <br>
+              <h5>Website:</h5> <a data-bind="attr: {href: $data.website,title:$data.website }"></a> <br>
+              <h5>Address:</h5> <span data-bind="text: $data.formatted_address"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-group" id="placeAccordion" data-bind="foreach: places">
+        <div class="panel panel-info">
+          <div class="panel-heading">
+            <h4 class="panel-title">
+              <a data-toggle="collapse" data-parent="#placeAccordion"
+                 data-bind="attr: {href: '#place_' + $data.place_id }, click: $parent.clickMapMarker">
                 <span data-bind="text: $data.name">Collapsible Accordion 1</span>
               </a>
             </h4>
@@ -57,6 +55,7 @@
               <h5>Rating:</h5> <span data-bind="text: $data.rating"></span> /5 <br>
               <h5>Website:</h5> <a data-bind="attr: {href: $data.website,title:$data.website }"></a> <br>
               <h5>Address:</h5> <span data-bind="text: $data.formatted_address"></span>
+
             </div>
           </div>
         </div>

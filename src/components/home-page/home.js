@@ -24,6 +24,7 @@ define(["knockout", "text!./home.html", "bootstrap",
                this.name = name;
                this.lat = lat;
                this.lon = lon;
+               this.googleMap = null;
            };
            
            function HomeViewModel(route) {
@@ -45,106 +46,78 @@ define(["knockout", "text!./home.html", "bootstrap",
                    }
                });
                self.allPlaces = ko.computed(function() {
-                   var everywhere = self.places();
-                   if (this.showRestaurants() === true){
-                       console.log();("display the restaurants");
-                       everywhere = everywhere.concat(this.restaurants());
-                   }
+                   //this is all the restaurants AND all the user-added places
+                   var everywhere = self.restaurants().concat(self.places());
                    return everywhere;
                }, this);
            
-               self.shopping = ko.observableArray();
+               // observables related to map markers and info windows
                self.markers = ko.observableArray();
-               self.photoURL = ko.observable("");//https://browshot.com/static/images/not-found.png");
+               self.photoURL = ko.observable("");
                self.photoTitle = ko.observable("no image found");
                self.markerTitle = ko.observable("Unknown Name");
                self.markerAddress = ko.observable("Unknown Address");
 
                console.log("my lat " + self.myNeighborhood().lat + " my lon " + self.myNeighborhood().lon);
                this.message = ko.observable('Welcome to avondale-map!');
-           }
-
-           HomeViewModel.prototype.getMarkerContent = function(title, lat, lon, address) {
-               var self = this;
-               //Get picture from flickr
-               console.log("getMarkerContent: title: " + title);
-               var apiKey = "f42f795745b12915318c5e66e664db8e";
-               var flickrAPI = "http://api.flickr.com/services/rest/?method=flickr.photos.search&jsoncallback=?";
-               $.getJSON( flickrAPI, {
-                   text: title,
-                   //tags: title,
-                   api_key: apiKey,
-                   tagmode: "any",
-                   format: "json",
-                   //has_geo: true,
-                   lat: lat,
-                   lon: lon,
-                   radius: 10,
-                   per_page: 1,
-               })
-                   .done(function( data ) {
-                       console.log("data from flickr! Num Photos: " + data.photos.photo.length);
-                       if (data.photos.photo.length >= 1){
-                           //just display the first photo
-                           var photo = data.photos.photo[0];
-                           self.photoURL("http://farm" + photo.farm + ".static.flickr.com/" + 
-                                   photo.server + "/" + photo.id + "_" + photo.secret + "_" + "t.jpg");
-                           self.photoTitle(photo.title);
-                           var otherURL = "http://www.flickr.com/photos/" + photo.owner + "/" + photo.id;
-                       }
-                       else {
-                       self.photoURL("");
-                       self.photoTitle("No image found");
-                       }
-                   })
-                   .fail(function(err) {
-                       console.log("error from flickr");
-                       console.log(err);
-                       self.photoURL("");
-                       self.photoTitle("Image load error");
-                   })
-                   .always(function() {
-                       self.markerTitle(title);
-                       self.markerAddress(address);
-                   });
-           };
-
-           var addInfoWindow = function(marker, map, content) {
-               var infowindow = new google.maps.InfoWindow({
-                   content: content,
-                   size: new google.maps.Size(50, 50)
-               });
                
-               marker.info = infowindow;
-           };
 
-           HomeViewModel.prototype.createMapMarker = function(place, placeListIndex){
-               var self = this;
-
-               var image = {
-                   url: place.icon,
-                   size: new google.maps.Size(71, 71),
-                   origin: new google.maps.Point(0, 0),
-                   anchor: new google.maps.Point(17, 34),
-                   scaledSize: new google.maps.Size(25, 25)
+               self.clickMapMarker = function(place, e) {
+                   //Toggle the info window on a map marker
+                   console.log("expanded list accordion for " + place.name);
+                   console.log(self);
+                   console.log(e);
+                   self.showInfoWindow(place.mapMarker);
                };
-               
-               // Create a marker for each place.
-               var marker = new google.maps.Marker({
-                   map: self.myNeighborhood().googleMap,
-                   icon: image,
-                   title: place.name,
-                           snippet: "stuff",
-                   position: place.geometry.location,
-               });
-               
-               var content = $('#mapMarkerInfo')[0];
-               addInfoWindow(marker, self.myNeighborhood().googleMap, content);
-               
-               marker.placeListIndex = placeListIndex;
-               
-               google.maps.event.addListener(marker, 'click', function(e) {
-                   console.log("clicked " + marker.title);
+           
+
+               self.getMarkerContent = function(title, lat, lon, address) {
+                   var self = this;
+                   //Get picture from flickr
+                   console.log("getMarkerContent: title: " + title);
+                   var apiKey = "f42f795745b12915318c5e66e664db8e";
+                   var flickrAPI = "http://api.flickr.com/services/rest/?method=flickr.photos.search&jsoncallback=?";
+                   $.getJSON( flickrAPI, {
+                       text: title,
+                       api_key: apiKey,
+                       tagmode: "any",
+                       format: "json",
+                       //has_geo: true,
+                       lat: lat,
+                       lon: lon,
+                       radius: 10,
+                       per_page: 1,
+                   })
+                       .done(function( data ) {
+                           console.log("data from flickr! Num Photos: " + data.photos.photo.length);
+                           if (data.photos.photo.length >= 1){
+                               //just display the first photo
+                               var photo = data.photos.photo[0];
+                               self.photoURL("http://farm" + photo.farm + ".static.flickr.com/" + 
+                                             photo.server + "/" + photo.id + "_" + photo.secret + "_" + "t.jpg");
+                               self.photoTitle(photo.title);
+                               var otherURL = "http://www.flickr.com/photos/" + photo.owner + "/" + photo.id;
+                           }
+                           else {
+                               self.photoURL("");
+                               self.photoTitle("No image found");
+                           }
+                       })
+                       .fail(function(err) {
+                           console.log("error from flickr");
+                           console.log(err);
+                           self.photoURL("");
+                           self.photoTitle("Image load error");
+                       })
+                       .always(function() {
+                           self.markerTitle(title);
+                           self.markerAddress(address);
+                       });
+               };
+
+           
+               self.showInfoWindow = function(marker) {
+                   var self = this;
                    
                    // Set all the markers to their unselected icon
                    for (var i=0; i< self.markers().length; i++){
@@ -162,73 +135,117 @@ define(["knockout", "text!./home.html", "bootstrap",
                        self.markers()[i].info.close();
                    }
                    
-                   //close all open panels so we can scroll to the right spot
-                   $("#accordion .in").collapse('hide');
-                   $("#placeAccordion .in").collapse('hide');
-                   
-                   //scroll the list down to the one we will click on
-                   var placeCount = self.allPlaces().length;
-                   var totalHeight = $(".place-list").get(0).scrollHeight;
-                   var newPosition = (totalHeight/placeCount) * marker.placeListIndex - $("#place_" + place.place_id).outerHeight();
-                   console.log("count: " + placeCount + "  height: " + totalHeight + "  position: " + newPosition);
-                   $(".place-list").scrollTop(newPosition);                           
-                   
-                   //fire a click event on the right panel
-                   $("a[href=#place_" + place.place_id + "]").click()
-                   
+                   var place = self.allPlaces()[marker.placeListIndex];
+                   console.log("placeListIndex: " + marker.placeListIndex + "  allPlaces.length: " + self.allPlaces().length);
                    // Get photo for the info window
                    self.getMarkerContent(place.name, self.myNeighborhood().lat, self.myNeighborhood().lon, place.formatted_address);
                    
                    // Open the info window
                    marker.info.open(self.myNeighborhood().googleMap, marker);
+               };
+               
+               var addInfoWindow = function(marker, map, content) {
+                   var infowindow = new google.maps.InfoWindow({
+                       content: content,
+                       size: new google.maps.Size(50, 50)
+                   });
                    
-               });
-               
-               google.maps.event.addListener(marker.info, "closeclick", function () {
-                   //google maps will destroy this node and knockout will stop updating it
-                   //add it back to the body so knockout will take care of it
-                   $('#hiddenStuff').append($('#mapMarkerInfo'));
-               });
-               
-               console.log("created map marker for " + marker.title);
-               
-               self.markers.push(marker);
-               place.mapMarker = marker;
-           };
+                   marker.info = infowindow;
+               };
            
-           
-           HomeViewModel.prototype.setMarkers = function(){
-               var self = this;
+               self.createMapMarker = function(place, placeListIndex){
+                   //Add a new map marker to the map
+                   var image = {
+                       url: place.icon,
+                       size: new google.maps.Size(71, 71),
+                       origin: new google.maps.Point(0, 0),
+                       anchor: new google.maps.Point(17, 34),
+                       scaledSize: new google.maps.Size(25, 25)
+                   };
+                   
+                   // Create a marker for each place.
+                   var marker = new google.maps.Marker({
+                       map: self.myNeighborhood().googleMap,
+                       icon: image,
+                       title: place.name,
+                       snippet: "stuff",
+                       position: place.geometry.location,
+                   });
+                   
+                   var content = $('#mapMarkerInfo')[0];
+                   addInfoWindow(marker, self.myNeighborhood().googleMap, content);
+                   
+                   marker.placeListIndex = placeListIndex;
+                   
+                   google.maps.event.addListener(marker, 'click', function(e) {
+                       console.log("clicked " + marker.title);
+                       
+                       self.showInfoWindow(marker);
+                       
+                       //close all open panels so we can scroll to the right spot on our list
+                       $("#accordion .in").collapse('hide');
+                       $("#placeAccordion .in").collapse('hide');
+                       
+                       //scroll the list down to the one we will click on
+                       var placeCount = self.allPlaces().length;
+                       var totalHeight = $(".place-list").get(0).scrollHeight;
+                       var newPosition = (totalHeight/placeCount) * marker.placeListIndex - $("#place_" + place.place_id).outerHeight();
+                       console.log("count: " + placeCount + "  height: " + totalHeight + "  position: " + newPosition);
+                       $(".place-list").scrollTop(newPosition);               
+                       
+                       //fire a click event on our list to open the right accordion
+                       $("a[href=#place_" + place.place_id + "]").click()
+                       
+                   });
+                   
+                   google.maps.event.addListener(marker.info, "closeclick", function () {
+                       //google maps will destroy this node and knockout will stop updating it
+                       //add it back to the body so knockout will take care of it
+                       $('#hiddenStuff').append($('#mapMarkerInfo'));
+                       
+                       //put back the old icon since this is no longer selected
+                       marker.setIcon(marker.savedIcon);
+                   });
+                   
+                   console.log("created map marker for " + marker.title);
+                   
+                   self.markers.push(marker);
+                   place.mapMarker = marker;
+               };
                
-               console.log("setMarkers");
-               console.log("user has added " + this.places().length + "  places");
                
-               console.log("Make markers for  " + self.allPlaces().length + " places");
-               if (this.markers().length > 0){
-                   console.log("removing all the markers");
-                   for (var i = 0; i < this.markers().length; i++) {
-                       console.log("removing marker " + i);
-                       this.markers.replace(i, this.markers()[i].setMap(null))
+               self.setMarkers = function(){
+                   //sets all the initial markers.  For now, this is just restaurants.
+                   
+                   console.log("Make markers for  " + self.allPlaces().length + " places");
+                   if (this.markers().length > 0){
+                       //Remove any markers we had set previously. Really, there shouldn't be any.
+                       console.log("removing all the markers");
+                       for (var i = 0; i < this.markers().length; i++) {
+                           console.log("removing marker " + i);
+                           this.markers.replace(i, this.markers()[i].setMap(null))
+                       }
                    }
-               }
-               
-               // For each place, get the icon, place name, and location.
-               this.markers([]);
-               var bounds = new google.maps.LatLngBounds();
-               for (var i = 0, place; place = self.allPlaces()[i]; i++) {
-                   (function(place) {
-                       self.createMapMarker(place, i);
-                       bounds.extend(place.geometry.location);
-                   })(place);
-               }
-               
-               //this will zoom us out to fit all the markers
-               this.myNeighborhood().googleMap.fitBounds(bounds);
-           };	
-        
-        
+                   
+                   // For each place, get the icon, place name, and location.
+                   this.markers([]);
+                   var bounds = new google.maps.LatLngBounds();
+                   for (var i = 0, place; place = self.allPlaces()[i]; i++) {
+                       (function(place) {
+                           self.createMapMarker(place, i);
+                           bounds.extend(place.geometry.location);
+                       })(place);
+                   }
+                   
+                   //this will zoom us out to fit all the markers
+                   this.myNeighborhood().googleMap.fitBounds(bounds);
+               };	
+           }//end HomeViewModel
+           
 	   ko.bindingHandlers.map = {
+               // Custom knockout binding for a google map
 	       //http://stackoverflow.com/questions/12722925/google-maps-and-knockoutjs
+
 	       init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
                    console.log("ko.bindingHandlers.init");
 		   var mapObj = ko.utils.unwrapObservable(valueAccessor());
@@ -264,8 +281,9 @@ define(["knockout", "text!./home.html", "bootstrap",
                                var place = results[i];
                                bindingContext.$data.restaurants.push(place);
                            }
-                        //populate the known place markers
-                           bindingContext.$data.setMarkers();
+                           //populate the known place markers
+                           //bindingContext.$data.setMarkers();
+                           viewModel.setMarkers();
                        }
                     else {
                         console.log("Got bad places service status!");
@@ -275,10 +293,10 @@ define(["knockout", "text!./home.html", "bootstrap",
                    
 	       }
 	   };            
-           
-           
+
            
 	   ko.bindingHandlers.addressAutocomplete = {
+               //Custom knockout binding for a good places autocomplete input form
 	       init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
                    console.log("ko.bindingHandlers.addressAutocomplete");
 		   var value = valueAccessor();
@@ -291,9 +309,15 @@ define(["knockout", "text!./home.html", "bootstrap",
                    
 		   google.maps.event.addListener(autocomplete, 'place_changed', function () {
                        var newPlace = autocomplete.getPlace();
-                       console.log("got a new place");
-		       value.push(newPlace);
-                       bindingContext.$data.createMapMarker(newPlace, value.length - 1);//setMarkers();
+                       if (newPlace.place_id) { 
+                           console.log("got a new place");
+                           newPlace.clickMapMarker = self.clickMapMarker;
+		           value.push(newPlace);
+                           bindingContext.$data.createMapMarker(newPlace, viewModel.allPlaces().length - 1);
+                       
+                           //scroll to bottom of list where this will be added
+                           $(".place-list").scrollTop($(".place-list").get(0).scrollHeight);            
+                       }
 		   });
                    
 		   // Bias the SearchBox results towards places that are within the bounds of the
