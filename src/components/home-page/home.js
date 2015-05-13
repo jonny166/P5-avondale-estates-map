@@ -3,16 +3,16 @@ require.config({
 });
 requirejs.onError = function(err) {
     var failedId = err.requireModules && err.requireModules[0];
-    console.log("Got failedId: " + failedId + "  requireType: " + err.requireType);
+    console.log('Got failedId: ' + failedId + '  requireType: ' + err.requireType);
     if (err.requireType === 'timeout') {
         console.log('modules: ' + err.requireModules);
     }
     //report the error on the webpage
-    $("#page").text("LOADING REQUIRED MODULES FAILED: " + err.requireType + ":   " + failedId);
+    $('#page').text('LOADING REQUIRED MODULES FAILED: ' + err.requireType + ':   ' + failedId);
 
     throw err;
 };
-define(["knockout", "text!./home.html", "bootstrap",
+define(['knockout', 'text!./home.html', 'bootstrap',
         //'async!//maps.google.com/maps/api/js?sensor=false',
         'async!//maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places',
         'goog!search,1',
@@ -21,7 +21,7 @@ define(["knockout", "text!./home.html", "bootstrap",
     ],
 
     function(ko, homeTemplate) {
-        console.log("in main home.js function");
+        console.log('in main home.js function');
         var Neighborhood = function(name, lat, lon) {
             this.name = name;
             this.lat = lat;
@@ -31,15 +31,14 @@ define(["knockout", "text!./home.html", "bootstrap",
 
         function HomeViewModel(route) {
                 var self = this;
-                self.myNeighborhood = ko.observable(new Neighborhood("Avondale Estates, GA", 33.776, -84.2750));
+                self.myNeighborhood = ko.observable(new Neighborhood('Avondale Estates, GA', 33.776, -84.2750));
                 self.places = ko.observableArray([]);
                 self.restaurants = ko.observableArray([]);
                 self.showRestaurants = ko.observable(true);
                 self.showRestaurants.subscribe(function(updated) {
-                    //TODO: FIX THIS!!
                     var map = null;
                     if (updated === true) {
-                        console.log("show the restaurants");
+                        console.log('show the restaurants');
                         map = self.myNeighborhood().googleMap;
                     }
 
@@ -55,18 +54,18 @@ define(["knockout", "text!./home.html", "bootstrap",
 
                 // observables related to map markers and info windows
                 self.markers = ko.observableArray();
-                self.photoURL = ko.observable("");
-                self.photoTitle = ko.observable("no image found");
-                self.markerTitle = ko.observable("Unknown Name");
-                self.markerAddress = ko.observable("Unknown Address");
+                self.photoURL = ko.observable('');
+                self.photoTitle = ko.observable('no image found');
+                self.markerTitle = ko.observable('Unknown Name');
+                self.markerAddress = ko.observable('Unknown Address');
 
-                console.log("my lat " + self.myNeighborhood().lat + " my lon " + self.myNeighborhood().lon);
+                console.log('my lat ' + self.myNeighborhood().lat + ' my lon ' + self.myNeighborhood().lon);
                 this.message = ko.observable('Welcome to avondale-map!');
 
 
                 self.clickMapMarker = function(place, e) {
                     //Toggle the info window on a map marker
-                    console.log("expanded list accordion for " + place.name);
+                    console.log('expanded list accordion for ' + place.name);
                     console.log(self);
                     console.log(e);
                     self.showInfoWindow(place.mapMarker);
@@ -76,14 +75,14 @@ define(["knockout", "text!./home.html", "bootstrap",
                 self.getMarkerContent = function(title, lat, lon, address) {
                     var self = this;
                     //Get picture from flickr
-                    console.log("getMarkerContent: title: " + title);
-                    var apiKey = "f42f795745b12915318c5e66e664db8e";
-                    var flickrAPI = "//api.flickr.com/services/rest/?method=flickr.photos.search&jsoncallback=?";
+                    console.log('getMarkerContent: title: ' + title);
+                    var apiKey = 'f42f795745b12915318c5e66e664db8e';
+                    var flickrAPI = '//api.flickr.com/services/rest/?method=flickr.photos.search&jsoncallback=?';
                     $.getJSON(flickrAPI, {
                             text: title,
                             api_key: apiKey,
-                            tagmode: "any",
-                            format: "json",
+                            tagmode: 'any',
+                            format: 'json',
                             //has_geo: true,
                             lat: lat,
                             lon: lon,
@@ -91,24 +90,24 @@ define(["knockout", "text!./home.html", "bootstrap",
                             per_page: 1,
                         })
                         .done(function(data) {
-                            console.log("data from flickr! Num Photos: " + data.photos.photo.length);
+                            console.log('data from flickr! Num Photos: ' + data.photos.photo.length);
                             if (data.photos.photo.length >= 1) {
                                 //just display the first photo
                                 var photo = data.photos.photo[0];
-                                self.photoURL("//farm" + photo.farm + ".static.flickr.com/" +
-                                    photo.server + "/" + photo.id + "_" + photo.secret + "_" + "t.jpg");
+                                self.photoURL('//farm' + photo.farm + '.static.flickr.com/' +
+                                    photo.server + '/' + photo.id + '_' + photo.secret + '_' + 't.jpg');
                                 self.photoTitle(photo.title);
-                                var otherURL = "//www.flickr.com/photos/" + photo.owner + "/" + photo.id;
+                                var otherURL = '//www.flickr.com/photos/' + photo.owner + '/' + photo.id;
                             } else {
-                                self.photoURL("");
-                                self.photoTitle("No image found");
+                                self.photoURL('');
+                                self.photoTitle('No image found');
                             }
                         })
                         .fail(function(err) {
-                            console.log("error from flickr");
+                            console.log('error from flickr');
                             console.log(err);
-                            self.photoURL("");
-                            self.photoTitle("Image load error");
+                            self.photoURL('');
+                            self.photoTitle('Image load error');
                         })
                         .always(function() {
                             self.markerTitle(title);
@@ -129,7 +128,7 @@ define(["knockout", "text!./home.html", "bootstrap",
 
                     // Change icon so they know what is selected
                     marker.savedIcon = marker.icon;
-                    marker.setIcon("//maps.google.com/mapfiles/ms/micons/POI.png");
+                    marker.setIcon('//maps.google.com/mapfiles/ms/micons/POI.png');
 
                     // Close any info windows that were open
                     for (var index = 0; index < self.markers().length; index++) {
@@ -137,7 +136,7 @@ define(["knockout", "text!./home.html", "bootstrap",
                     }
 
                     var place = self.allPlaces()[marker.placeListIndex];
-                    console.log("placeListIndex: " + marker.placeListIndex + "  allPlaces.length: " + self.allPlaces().length);
+                    console.log('placeListIndex: ' + marker.placeListIndex + '  allPlaces.length: ' + self.allPlaces().length);
                     // Get photo for the info window
                     self.getMarkerContent(place.name, self.myNeighborhood().lat, self.myNeighborhood().lon, place.formatted_address);
 
@@ -169,7 +168,7 @@ define(["knockout", "text!./home.html", "bootstrap",
                         map: self.myNeighborhood().googleMap,
                         icon: image,
                         title: place.name,
-                        snippet: "stuff",
+                        snippet: 'stuff',
                         position: place.geometry.location,
                     });
 
@@ -179,27 +178,27 @@ define(["knockout", "text!./home.html", "bootstrap",
                     marker.placeListIndex = placeListIndex;
 
                     google.maps.event.addListener(marker, 'click', function(e) {
-                        console.log("clicked " + marker.title);
+                        console.log('clicked ' + marker.title);
 
                         self.showInfoWindow(marker);
 
                         //close all open panels so we can scroll to the right spot on our list
-                        $("#accordion .in").collapse('hide');
-                        $("#placeAccordion .in").collapse('hide');
+                        $('#accordion .in').collapse('hide');
+                        $('#placeAccordion .in').collapse('hide');
 
                         //scroll the list down to the one we will click on
                         var placeCount = self.allPlaces().length;
-                        var totalHeight = $(".place-list").get(0).scrollHeight;
-                        var newPosition = (totalHeight / placeCount) * marker.placeListIndex - $("#place_" + place.place_id).outerHeight();
-                        console.log("count: " + placeCount + "  height: " + totalHeight + "  position: " + newPosition);
-                        $(".place-list").scrollTop(newPosition);
+                        var totalHeight = $('.place-list').get(0).scrollHeight;
+                        var newPosition = (totalHeight / placeCount) * marker.placeListIndex - $('#place_' + place.place_id).outerHeight();
+                        console.log('count: ' + placeCount + '  height: ' + totalHeight + '  position: ' + newPosition);
+                        $('.place-list').scrollTop(newPosition);
 
                         //fire a click event on our list to open the right accordion
-                        $("a[href=#place_" + place.place_id + "]").click();
+                        $('a[href=#place_' + place.place_id + ']').click();
 
                     });
 
-                    google.maps.event.addListener(marker.info, "closeclick", function() {
+                    google.maps.event.addListener(marker.info, 'closeclick', function() {
                         //google maps will destroy this node and knockout will stop updating it
                         //add it back to the body so knockout will take care of it
                         $('#hiddenStuff').append($('#mapMarkerInfo'));
@@ -208,7 +207,7 @@ define(["knockout", "text!./home.html", "bootstrap",
                         marker.setIcon(marker.savedIcon);
                     });
 
-                    console.log("created map marker for " + marker.title);
+                    console.log('created map marker for ' + marker.title);
 
                     self.markers.push(marker);
                     place.mapMarker = marker;
@@ -218,12 +217,12 @@ define(["knockout", "text!./home.html", "bootstrap",
                 self.setMarkers = function() {
                     //sets all the initial markers.  For now, this is just restaurants.
 
-                    console.log("Make markers for  " + self.allPlaces().length + " places");
+                    console.log('Make markers for  ' + self.allPlaces().length + ' places');
                     if (this.markers().length > 0) {
                         //Remove any markers we had set previously. Really, there shouldn't be any.
-                        console.log("removing all the markers");
+                        console.log('removing all the markers');
                         for (var i = 0; i < this.markers().length; i++) {
-                            console.log("removing marker " + i);
+                            console.log('removing marker ' + i);
                             this.markers.replace(i, this.markers()[i].setMap(null));
                         }
                     }
@@ -251,7 +250,7 @@ define(["knockout", "text!./home.html", "bootstrap",
             //http://stackoverflow.com/questions/12722925/google-maps-and-knockoutjs
 
             init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-                console.log("ko.bindingHandlers.init");
+                console.log('ko.bindingHandlers.init');
                 var mapObj = ko.utils.unwrapObservable(valueAccessor());
                 var latLng = new google.maps.LatLng(
                     ko.utils.unwrapObservable(mapObj.lat),
@@ -266,7 +265,7 @@ define(["knockout", "text!./home.html", "bootstrap",
 
                 //Set our place search and place list as 
                 //google controls and attach them to the map
-                var controlElement = $("#map-place-control");
+                var controlElement = $('#map-place-control');
                 mapObj.googleMap.controls[google.maps.ControlPosition.LEFT_TOP].push(controlElement[0]);
 
                 var request = {
@@ -280,7 +279,7 @@ define(["knockout", "text!./home.html", "bootstrap",
                 var service = new google.maps.places.PlacesService(mapObj.googleMap);
                 service.textSearch(request, function(results, status) {
                     if (status == google.maps.places.PlacesServiceStatus.OK) {
-                        console.log("places loaded with this many results: " + results.length);
+                        console.log('places loaded with this many results: ' + results.length);
                         for (var i = 0; i < results.length; i++) {
                             var place = results[i];
                             bindingContext.$data.restaurants.push(place);
@@ -289,7 +288,7 @@ define(["knockout", "text!./home.html", "bootstrap",
                         //bindingContext.$data.setMarkers();
                         viewModel.setMarkers();
                     } else {
-                        console.log("Got bad places service status!");
+                        console.log('Got bad places service status!');
                         console.log(status);
                     }
                 });
@@ -301,7 +300,7 @@ define(["knockout", "text!./home.html", "bootstrap",
         ko.bindingHandlers.addressAutocomplete = {
             //Custom knockout binding for a good places autocomplete input form
             init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-                console.log("ko.bindingHandlers.addressAutocomplete");
+                console.log('ko.bindingHandlers.addressAutocomplete');
                 var value = valueAccessor();
                 var valueUnwrapped = ko.unwrap(value);
 
@@ -315,13 +314,13 @@ define(["knockout", "text!./home.html", "bootstrap",
                 google.maps.event.addListener(autocomplete, 'place_changed', function() {
                     var newPlace = autocomplete.getPlace();
                     if (newPlace.place_id) {
-                        console.log("got a new place");
+                        console.log('got a new place');
                         newPlace.clickMapMarker = self.clickMapMarker;
                         value.push(newPlace);
                         bindingContext.$data.createMapMarker(newPlace, viewModel.allPlaces().length - 1);
 
                         //scroll to bottom of list where this will be added
-                        $(".place-list").scrollTop($(".place-list").get(0).scrollHeight);
+                        $('.place-list').scrollTop($('.place-list').get(0).scrollHeight);
                     }
                 });
 
@@ -334,7 +333,7 @@ define(["knockout", "text!./home.html", "bootstrap",
 
             },
             update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-                console.log("search box changed");
+                console.log('search box changed');
                 ko.bindingHandlers.value.update(element, valueAccessor);
             }
         };
