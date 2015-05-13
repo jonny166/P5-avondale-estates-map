@@ -1,64 +1,56 @@
-html,body {
-    width:100%;
-    height:100%;
-    margin:0;
-    padding:0;
-    overflow-y:auto;
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
     //padding-top:60px;
 }
-
-
 #page {
     margin-top: 80px;
 }
-
 #map {
-    background:red;
+    //background:red;
     display: block;
-    position:absolute;
-    height:auto;
-    bottom:0;
-    top:0;
-    left:0;
-    right:0;
-    margin-top:50px; /* adjust top margin to your header height */
+    position: absolute;
+    height: auto;
+    bottom: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin-top: 50px;
+    /* adjust top margin to your header height */
 }
-
-#map img{max-width:none}
-
+#map img {
+    max-width: none
+}
 .overlap {
-    position:relative;
+    position: relative;
 }
-
-.place-list{
-    max-height:350px;
+.place-list {
+    max-height: 350px;
     width: 300px;
-    heightStyle:fill;
-    overflow-y:scroll;
-    background-color:orange;
+    heightStyle: fill;
+    overflow-y: scroll;
+    background-color: orange;
     border-style: solid;
     border-width: 5px;
-    border-color:orange;
+    border-color: orange;
     margin-left: 40px;
     position: relative;
 }
-
-.map-control-form{
-    background-color:orange;
+.map-control-form {
+    background-color: orange;
     width: 300px;
     border-style: solid;
     border-width: 5px;
-    border-color:orange;
+    border-color: orange;
     margin-top: 40px;
     margin-left: 40px;
 }
-
-
 h1 {
-  font-size: 130%;
-  margin-bottom: 0.5em;
-  border-bottom: 1px solid #fcb100;
+    font-size: 130%;
+    margin-bottom: 0.5em;
+    border-bottom: 1px solid #fcb100;
 }
-
-
-
