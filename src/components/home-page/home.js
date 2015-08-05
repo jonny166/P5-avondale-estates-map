@@ -77,7 +77,7 @@ define(['knockout', 'text!./home.html', 'bootstrap',
                     //Get picture from flickr
                     console.log('getMarkerContent: title: ' + title);
                     var apiKey = 'f42f795745b12915318c5e66e664db8e';
-                    var flickrAPI = '//api.flickr.com/services/rest/?method=flickr.photos.search&jsoncallback=?';
+                    var flickrAPI = 'https://api.flickr.com/services/rest/?method=flickr.photos.search&jsoncallback=?';
                     $.getJSON(flickrAPI, {
                             text: title,
                             api_key: apiKey,
