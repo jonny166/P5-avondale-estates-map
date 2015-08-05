@@ -5,10 +5,12 @@ An interactive map of my neighborhood, Avondale Estates, GA!
 This is an interactive map of Avondale Estates for Project 5 of the Udacity Front-End Developer Nanodegree.
 
 
-**Setup**:
-* The project can be built by cloning the repository and then typing "gulp".
-* The directory with the contents for your web server to host will be avondale-map/dist.
-* It can run over http or https
+**How to Run**:
+* Clone the repository
+* Run "npm install"
+* Run "gulp"
+* You can now direct your browser to localhost:8080 to use the site
+* The directory with the contents built to host will be avondale-map/dist.
 
 
 **Usage**:
